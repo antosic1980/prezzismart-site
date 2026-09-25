@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>PrezziSmart - Le migliori offerte Amazon</title>
+    <title>PrezziSmart - Offerte del momento</title>
 
     <style>
         body {
@@ -17,13 +17,13 @@
         header {
             background: #111827;
             color: white;
-            padding: 30px 20px;
+            padding: 35px 20px;
             text-align: center;
         }
 
         header h1 {
             margin: 0;
-            font-size: 36px;
+            font-size: 38px;
         }
 
         header p {
@@ -40,10 +40,6 @@
         .intro {
             text-align: center;
             margin-bottom: 30px;
-        }
-
-        .intro h2 {
-            font-size: 28px;
         }
 
         .card {
@@ -67,6 +63,10 @@
         .discount {
             color: #16a34a;
             font-weight: bold;
+        }
+
+        .category {
+            color: #666;
         }
 
         .button {
@@ -102,25 +102,8 @@
         <p>Scopri le occasioni che abbiamo trovato.</p>
     </div>
 
-    <div class="card">
-        <h2>📦 Prodotto di esempio PrezziSmart</h2>
-
-        <p>
-            <span class="old-price">€99,99</span>
-        </p>
-
-        <p class="price">€49,99</p>
-
-        <p class="discount">📉 -50%</p>
-
-        <a
-            class="button"
-            href="https://www.amazon.it/"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            👉 Vedi l'offerta
-        </a>
+    <div id="offers">
+        <p>Caricamento offerte...</p>
     </div>
 
 </main>
@@ -128,6 +111,73 @@
 <footer>
     © 2026 PrezziSmart
 </footer>
+
+<script>
+
+async function loadOffers() {
+
+    const response = await fetch(
+        "https://raw.githubusercontent.com/TUO-USERNAME/prezzismart-bot/main/offers.json"
+    );
+
+    const offers = await response.json();
+
+    const container = document.getElementById("offers");
+
+    container.innerHTML = "";
+
+    offers.forEach(offer => {
+
+        const discount = Math.round(
+            ((offer.old_price - offer.price) / offer.old_price) * 100
+        );
+
+        if (discount < 30) {
+            return;
+        }
+
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        card.innerHTML = `
+            <h2>📦 ${offer.name}</h2>
+
+            <p class="category">
+                🏷️ ${offer.category}
+            </p>
+
+            <p>
+                <span class="old-price">
+                    €${offer.old_price.toFixed(2)}
+                </span>
+            </p>
+
+            <p class="price">
+                €${offer.price.toFixed(2)}
+            </p>
+
+            <p class="discount">
+                📉 -${discount}%
+            </p>
+
+            <a
+                class="button"
+                href="${offer.url}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                👉 Vedi l'offerta
+            </a>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+loadOffers();
+
+</script>
 
 </body>
 </html>
